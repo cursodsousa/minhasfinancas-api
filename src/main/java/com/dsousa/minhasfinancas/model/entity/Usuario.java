@@ -7,6 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -37,5 +40,7 @@ public class Usuario {
 	@JsonIgnore
 	private String senha;
 
-
+	public UserDetails getUserDetails() {
+		return User.builder().username(email).password(senha).roles("USER").build();
+	}
 }
