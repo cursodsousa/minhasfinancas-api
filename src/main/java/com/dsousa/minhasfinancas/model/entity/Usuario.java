@@ -40,6 +40,7 @@ public class Usuario {
 	@JsonIgnore
 	private String senha;
 
+	@JsonIgnore
 	public UserDetails getUserDetails() {
 		return User.builder().username(email).password(senha).roles("USER").build();
 	}

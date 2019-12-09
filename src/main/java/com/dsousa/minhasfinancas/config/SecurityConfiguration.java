@@ -14,9 +14,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.dsousa.minhasfinancas.security.JwtAuthFilter;
+import com.dsousa.minhasfinancas.security.JwtService;
+import com.dsousa.minhasfinancas.service.UsuarioService;
 
 @EnableWebSecurity
 public class SecurityConfiguration  extends WebSecurityConfigurerAdapter {
+	
+	@Autowired 
+	private JwtService jwtService;
+	@Autowired 
+	private UsuarioService usuarioService;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -55,6 +66,11 @@ public class SecurityConfiguration  extends WebSecurityConfigurerAdapter {
 			.userDetailsService(userDetailsService())
 			.passwordEncoder(passwordEncoder());
 	}
+	
+	@Bean
+	public OncePerRequestFilter jwtAuthFilter() {
+		return new JwtAuthFilter(jwtService, usuarioService);
+	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
@@ -62,8 +78,10 @@ public class SecurityConfiguration  extends WebSecurityConfigurerAdapter {
 			.csrf().disable()
 			.authorizeRequests()
 			.antMatchers("**/api/lancamentos/**").hasRole("USER")
+			.antMatchers("/api/usuarios/autenticar").permitAll()
 			.anyRequest().authenticated()
 		.and().httpBasic()
-		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		.and().addFilterBefore( jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 }
