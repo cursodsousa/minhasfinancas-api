@@ -14,4 +14,6 @@ public interface UsuarioService {
 	
 	Optional<Usuario> obterPorId(Long id);
 	
+	Usuario obterPorEmail(String email);
+	
 }
