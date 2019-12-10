@@ -27,19 +27,15 @@ public class JwtService {
 	private String chaveAssinatura;
 
 	public String gerarToken( Usuario usuario ) {
-		Map<String, Object> claims = new HashMap<String, Object>();
-		claims.put("sub", usuario.getEmail());
-		
-		LocalDateTime agora = LocalDateTime.now();
 		long expString = Long.valueOf(expiracao);
-		LocalDateTime expiracao = agora.plusMinutes( expString );
+		LocalDateTime expiracao =  LocalDateTime.now().plusMinutes( expString );
 		Date data = Date.from( expiracao.atZone(ZoneId.systemDefault() ).toInstant() );
 	
 		return Jwts
 				.builder()
 				.setSubject(usuario.getEmail())
 				.setExpiration(data)
-				.signWith( SignatureAlgorithm.HS512, "asdfa1sdfa1sd32f1a3d1f3")
+				.signWith( SignatureAlgorithm.HS512, chaveAssinatura)
 				.compact();
 	}
 	
@@ -48,7 +44,7 @@ public class JwtService {
 	}
 	
 	public Claims obterClaims( String token ) {
-		return Jwts.parser().setSigningKey("asdfa1sdfa1sd32f1a3d1f3").parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(chaveAssinatura).parseClaimsJws(token).getBody();
 	}
 	
 	public boolean tokenValido( String token ) {
