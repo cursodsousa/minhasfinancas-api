@@ -1,9 +1,8 @@
 package com.dsousa.minhasfinancas.config;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.dsousa.minhasfinancas.exception.ErroAutenticacao;
 import com.dsousa.minhasfinancas.security.JwtAuthFilter;
 import com.dsousa.minhasfinancas.security.JwtService;
 import com.dsousa.minhasfinancas.service.UsuarioService;
@@ -50,12 +50,17 @@ public class SecurityConfiguration  extends WebSecurityConfigurerAdapter {
 		return new UserDetailsService() {
 			@Override
 			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-				return User
-						.builder()
-						.username(username)
-						.password(passwordEncoder().encode("321"))
-						.roles("USER")
-						.build();
+				return usuarioService
+							.buscarPorEmail(username)
+							.map( u -> User
+										.builder()
+										.username(u.getEmail())
+										.password(u.getSenha())
+										.roles("USER")
+										.build()
+							).orElseThrow(() -> new ErroAutenticacao("Usuário não encontrado.") )
+							;
+				
 			}
 		};
 	}
@@ -77,11 +82,10 @@ public class SecurityConfiguration  extends WebSecurityConfigurerAdapter {
 		http
 			.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("**/api/lancamentos/**").hasRole("USER")
-			.antMatchers("/api/usuarios/autenticar").permitAll()
-			.anyRequest().authenticated()
-		.and().httpBasic()
+//			.antMatchers("/api/lancamentos/**").authenticated()
+			.anyRequest().permitAll()
 		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and().addFilterBefore( jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
+
 }

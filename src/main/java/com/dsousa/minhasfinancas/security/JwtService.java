@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.dsousa.minhasfinancas.model.entity.Usuario;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -39,18 +40,22 @@ public class JwtService {
 				.compact();
 	}
 	
-	public String obterUsuario( String token ) {
+	public String obterUsuario( String token ) throws ExpiredJwtException{
 		return (String) obterClaims(token).get("sub");
 	}
 	
-	public Claims obterClaims( String token ) {
+	public Claims obterClaims( String token ) throws ExpiredJwtException {
 		return Jwts.parser().setSigningKey(chaveAssinatura).parseClaimsJws(token).getBody();
 	}
 	
 	public boolean tokenValido( String token ) {
-		Date expiration = (Date) obterClaims(token).getExpiration();
-		LocalDateTime data = expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-		return !LocalDateTime.now().isAfter(data);
+		try {
+			Date expiration = (Date) obterClaims(token).getExpiration();
+			LocalDateTime data = expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			return !LocalDateTime.now().isAfter(data);
+		}catch (Exception e) {
+			return false;
+		}
 	}
 	
 	public static void main(String[] args) {
