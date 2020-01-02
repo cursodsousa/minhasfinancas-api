@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -140,7 +141,7 @@ public class LancamentoServiceTest {
 		when( repository.findAll(any(Example.class)) ).thenReturn(lista);
 		
 		//execucao
-		List<Lancamento> resultado = service.buscar(lancamento);
+		List<Lancamento> resultado = service.buscar(lancamento, PageRequest.of(0, 10)).getContent();
 		
 		//verificacoes
 		assertThat(resultado)

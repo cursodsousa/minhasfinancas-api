@@ -1,8 +1,9 @@
 package com.dsousa.minhasfinancas.api.resource;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +41,9 @@ public class LancamentoResource {
 			@RequestParam(value ="descricao" , required = false) String descricao,
 			@RequestParam(value = "mes", required = false) Integer mes,
 			@RequestParam(value = "ano", required = false) Integer ano,
-			@RequestParam("usuario") Long idUsuario
+			@RequestParam("usuario") Long idUsuario,
+			@RequestParam("page") Integer page,
+			@RequestParam("size") Integer size
 			) {
 		
 		Lancamento lancamentoFiltro = new Lancamento();
@@ -55,7 +58,7 @@ public class LancamentoResource {
 			lancamentoFiltro.setUsuario(usuario.get());
 		}
 		
-		List<Lancamento> lancamentos = service.buscar(lancamentoFiltro);
+		Page<Lancamento> lancamentos =  service.buscar(lancamentoFiltro, PageRequest.of(page, size));
 		return ResponseEntity.ok(lancamentos);
 	}
 	

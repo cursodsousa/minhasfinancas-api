@@ -1,8 +1,10 @@
 package com.dsousa.minhasfinancas.service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import com.dsousa.minhasfinancas.model.entity.Lancamento;
 import com.dsousa.minhasfinancas.model.enums.StatusLancamento;
@@ -15,7 +17,7 @@ public interface LancamentoService {
 	
 	void deletar(Lancamento lancamento);
 	
-	List<Lancamento> buscar( Lancamento lancamentoFiltro );
+	Page<Lancamento> buscar( Lancamento lancamentoFiltro, PageRequest pageRequest );
 	
 	void atualizarStatus(Lancamento lancamento, StatusLancamento status);
 	
