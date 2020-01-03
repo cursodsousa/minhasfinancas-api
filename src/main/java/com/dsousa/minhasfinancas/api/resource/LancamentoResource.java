@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,7 +60,7 @@ public class LancamentoResource {
 			lancamentoFiltro.setUsuario(usuario.get());
 		}
 		
-		Page<Lancamento> lancamentos =  service.buscar(lancamentoFiltro, PageRequest.of(page, size));
+		Page<Lancamento> lancamentos =  service.buscar(lancamentoFiltro, PageRequest.of(page, size, Sort.by(Direction.DESC, "id")));
 		return ResponseEntity.ok(lancamentos);
 	}
 	
