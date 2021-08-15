@@ -1,5 +1,6 @@
 package com.dsousa.minhasfinancas.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,8 +11,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.dsousa.minhasfinancas.service.impl.SecurityUserDetailsService;
+
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+	
+	@Autowired
+	private SecurityUserDetailsService userDetailsService;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -21,13 +27,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		String senhaCondificada = passwordEncoder().encode("qwe123");
-		
 		auth
-			.inMemoryAuthentication()
-			.withUser("usuario")
-			.password(senhaCondificada)
-			.roles("USER");
+			.userDetailsService(userDetailsService)
+			.passwordEncoder(passwordEncoder());
 	}
 	
 	@Override
