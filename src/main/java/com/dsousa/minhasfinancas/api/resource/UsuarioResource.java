@@ -37,7 +37,7 @@ public class UsuarioResource {
 		try {
 			Usuario usuarioAutenticado = service.autenticar(dto.getEmail(), dto.getSenha());
 			String token = jwtService.gerarToken(usuarioAutenticado);
-			TokenDTO tokenDTO = new TokenDTO( usuarioAutenticado, token);
+			TokenDTO tokenDTO = new TokenDTO( usuarioAutenticado.getNome(), token);
 			return ResponseEntity.ok(tokenDTO);
 		}catch (ErroAutenticacao e) {
 			return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,7 +1,5 @@
 package com.dsousa.minhasfinancas.api.dto;
 
-import com.dsousa.minhasfinancas.model.entity.Usuario;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TokenDTO {
 
-	private Usuario usuario;
+	private String nome;
 	private String token;
 	
 }
